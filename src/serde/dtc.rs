@@ -1,7 +1,7 @@
 use super::deserializer::DecodeError;
 use super::Payload;
-use crate::proto::dtc::*;
-use crate::UdsError::{self, *};
+use crate::proto::dtc::{DTCReqSubfunction, DTCRspSubfunction, ReadDTCReq, ReadDTCRsp};
+use crate::UdsError::{self, PayloadLengthTooShort};
 use std::io::{Read, Write};
 
 impl Payload for ReadDTCReq {
@@ -82,10 +82,10 @@ impl Payload for ReadDTCRsp {
 mod test {
     use std::io::Cursor;
 
+    use super::DTCRspSubfunction;
+    use crate::message::DtcAndStatusRecord;
     use crate::proto::dtc;
     use crate::{uds_read, UdsMessage};
-
-    use super::{DTCRspSubfunction, DtcAndStatusRecord};
 
     #[test]
     fn available_dtc_deserialize() {

@@ -44,6 +44,7 @@ pub type DTCFunctionalUnit = u8;
 
 impl Dtc {
     /// Create a DTC code
+    #[must_use]
     pub fn new(dtc_high_byte: u8, dtc_middle_byte: u8, dtc_low_byte: u8) -> Dtc {
         Dtc {
             dtc: [dtc_high_byte, dtc_middle_byte, dtc_low_byte],
@@ -164,9 +165,9 @@ pub type ReportNumberOfEmissionsOBDDTCByStatusMask = ByDTCStatusMask;
 pub type ReportEmissionsOBDDTCByStatusMask = ByDTCStatusMask;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-/// FIlter by ExtDataRecordNumber
+/// `Filter` by `ExtDataRecordNumber`
 pub struct ReportDTCExtDataRecordByRecordNumber {
-    /// ExtData record number
+    /// `ExtData` record number
     pub record: DTCExtDataRecordNumber,
 }
 
@@ -185,7 +186,7 @@ pub struct ReportUserDefMemoryDTCSnapshotRecordByDTCNumber {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-/// Filter by DTC, ExtData record number and memory selection
+/// Filter by DTC, `ExtData` record number and memory selection
 pub struct ReportUserDefMemoryDTCExtDataRecordByDTCNumber {
     /// DTC mask
     pub mask: DTCMaskRecord,
@@ -362,20 +363,20 @@ pub struct DtcStoredDataRecord {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-/// Response of DTC, its status and a list of ExtData records
+/// Response of DTC, its status and a list of `ExtData` records
 pub struct ResponseDTCExtDataRecordByDTCNumber {
     /// DTC and its status
     pub dtc_status: DtcAndStatusRecord,
-    /// ExtData records
+    /// `ExtData` records
     pub records: Vec<ExtDataRecordAndNumber>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-/// ExtData record
+/// `ExtData` record
 pub struct ExtDataRecordAndNumber {
     /// Record number
     pub record_number: DTCExtDataRecordNumber,
-    /// ExtData value
+    /// `ExtData` value
     pub extended_data: Vec<u8>,
 }
 
@@ -416,20 +417,20 @@ pub struct DtcAndFaultCounter {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-/// Response DTC and its ExtData records
+/// Response DTC and its `ExtData` records
 pub struct ResponseDTCExtDataRecordByRecordNumber {
     /// DTC and status record
     pub dtc_status: DtcAndStatusRecord,
-    /// ExtData records
+    /// `ExtData` records
     pub records: Vec<DtcAndStatusAndExtDataRecord>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-/// DTC status with its ExtData
+/// DTC status with its `ExtData`
 pub struct DtcAndStatusAndExtDataRecord {
     /// DTC and its status
     pub dtc_status: DtcAndStatusRecord,
-    /// ExtData
+    /// `ExtData`
     pub extended_data: Vec<u8>,
 }
 
@@ -467,13 +468,13 @@ pub struct RecordNumberAndIdentifierAndSnapshot {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-/// Response of Memory selection with its ExtData records
+/// Response of Memory selection with its `ExtData` records
 pub struct ResponseUserDefMemoryDTCExtDataRecordByDTCNumber {
     /// Memory selection
     pub memory: MemorySelection,
     /// DTC and its status
     pub dtc_status: DtcAndStatusRecord,
-    /// ExtData records
+    /// `ExtData` records
     pub records: Vec<ExtDataRecordAndNumber>,
 }
 

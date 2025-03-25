@@ -7,31 +7,31 @@ impl Display for DTCReqSubfunction {
         use DTCReqSubfunction::*;
         match self {
             ReportNumberOfDTCByStatusMask(r) => {
-                write!(f, "ReportNumberOfDTCByStatusMask({})", r)
+                write!(f, "ReportNumberOfDTCByStatusMask({r})")
             }
             ReportDTCByStatusMask(r) => {
-                write!(f, "ReportDTCByStatusMask({})", r)
+                write!(f, "ReportDTCByStatusMask({r})")
             }
             ReportDTCSnapshotIdentification(r) => {
-                write!(f, "ReportDTCSnapshotIdentification({})", r)
+                write!(f, "ReportDTCSnapshotIdentification({r})")
             }
             ReportDTCSnapshotRecordByDTCNumber(r) => {
-                write!(f, "ReportDTCSnapshotRecordByDTCNumber({})", r)
+                write!(f, "ReportDTCSnapshotRecordByDTCNumber({r})")
             }
             ReportDTCStoredDataByRecordNumber(r) => {
-                write!(f, "ReportDTCStoredDataByRecordNumber({})", r)
+                write!(f, "ReportDTCStoredDataByRecordNumber({r})")
             }
             ReportDTCExtDataRecordByDTCNumber(r) => {
-                write!(f, "ReportDTCExtDataRecordByDTCNumber({})", r)
+                write!(f, "ReportDTCExtDataRecordByDTCNumber({r})")
             }
             ReportNumberOfDTCBySeverityMaskRecord(r) => {
-                write!(f, "ReportNumberOfDTCBySeverityMaskRecord({})", r)
+                write!(f, "ReportNumberOfDTCBySeverityMaskRecord({r})")
             }
             ReportDTCBySeverityMaskRecord(r) => {
-                write!(f, "ReportDTCBySeverityMaskRecord({})", r)
+                write!(f, "ReportDTCBySeverityMaskRecord({r})")
             }
             ReportSeverityInformationOfDTC(r) => {
-                write!(f, "ReportSeverityInformationOfDTC({})", r)
+                write!(f, "ReportSeverityInformationOfDTC({r})")
             }
             ReportSupportedDTC => write!(f, "ReportSupportedDTC"),
             ReportFirstTestFailedDTC => write!(f, "ReportFirstTestFailedDTC"),
@@ -43,19 +43,19 @@ impl Display for DTCReqSubfunction {
                 write!(f, "ReportMostRecentConfirmedDTC")
             }
             ReportMirrorMemoryDTCByStatusMask(r) => {
-                write!(f, "ReportMirrorMemoryDTCByStatusMask({})", r)
+                write!(f, "ReportMirrorMemoryDTCByStatusMask({r})")
             }
             ReportMirrorMemoryDTCExtDataRecordByDTCNumber(r) => {
-                write!(f, "ReportMirrorMemoryDTCExtDataRecordByDTCNumber({})", r)
+                write!(f, "ReportMirrorMemoryDTCExtDataRecordByDTCNumber({r})")
             }
             ReportNumberOfMirrorMemoryDTCByStatusMask(r) => {
-                write!(f, "ReportNumberOfMirrorMemoryDTCByStatusMask({})", r)
+                write!(f, "ReportNumberOfMirrorMemoryDTCByStatusMask({r})")
             }
             ReportNumberOfEmissionsOBDDTCByStatusMask(r) => {
-                write!(f, "ReportNumberOfEmissionsOBDDTCByStatusMask({})", r)
+                write!(f, "ReportNumberOfEmissionsOBDDTCByStatusMask({r})")
             }
             ReportEmissionsOBDDTCByStatusMask(r) => {
-                write!(f, "ReportEmissionsOBDDTCByStatusMask({})", r)
+                write!(f, "ReportEmissionsOBDDTCByStatusMask({r})")
             }
             ReportDTCFaultDetectionCounter => {
                 write!(f, "ReportDTCFaultDetectionCounter")
@@ -64,22 +64,22 @@ impl Display for DTCReqSubfunction {
                 write!(f, "ReportDTCWithPermanentStatus")
             }
             ReportDTCExtDataRecordByRecordNumber(r) => {
-                write!(f, "ReportDTCExtDataRecordByRecordNumber({})", r)
+                write!(f, "ReportDTCExtDataRecordByRecordNumber({r})")
             }
             ReportUserDefMemoryDTCByStatusMask(r) => {
-                write!(f, "ReportUserDefMemoryDTCByStatusMask({})", r)
+                write!(f, "ReportUserDefMemoryDTCByStatusMask({r})")
             }
             ReportUserDefMemoryDTCSnapshotRecordByDTCNumber(r) => {
-                write!(f, "{}", r)
+                write!(f, "{r}")
             }
             ReportUserDefMemoryDTCExtDataRecordByDTCNumber(r) => {
-                write!(f, "ReportUserDefMemoryDTCExtDataRecordByDTCNumber({})", r)
+                write!(f, "ReportUserDefMemoryDTCExtDataRecordByDTCNumber({r})")
             }
             ReportWWHOBDDTCByMaskRecord(r) => {
-                write!(f, "ReportWWHOBDDTCByMaskRecord({})", r)
+                write!(f, "ReportWWHOBDDTCByMaskRecord({r})")
             }
             ReportWWHOBDDTCWithPermanentStatus(r) => {
-                write!(f, "ReportWWHOBDDTCWithPermanentStatus({})", r)
+                write!(f, "ReportWWHOBDDTCWithPermanentStatus({r})")
             }
             _ => Ok(()),
         }
@@ -98,13 +98,13 @@ impl Display for Dtc {
 
 impl Display for ByDTCStatusMask {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "mask={:02x}", &self.mask)
+        write!(f, "mask={:02x}", self.mask)
     }
 }
 
 impl Display for ByDTCMaskRecord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "mask={}", &self.mask)
+        write!(f, "mask={}", self.mask)
     }
 }
 
@@ -163,97 +163,88 @@ impl Display for DTCRspSubfunction {
         use DTCRspSubfunction::*;
         match self {
             ResponseNumberOfDTCByStatusMask(r) => {
-                write!(f, "ResponseNumberOfDTCByStatusMask({:?})", r)
+                write!(f, "ResponseNumberOfDTCByStatusMask({r:?})")
             }
             ResponseDTCByStatusMask(r) => {
-                write!(f, "ResponseDTCByStatusMask: {}", r)
+                write!(f, "ResponseDTCByStatusMask: {r}")
             }
             ResponseDTCSnapshotIdentification(r) => {
-                write!(f, "ResponseDTCSnapshotIdentification({:?})", r)
+                write!(f, "ResponseDTCSnapshotIdentification({r:?})")
             }
             ResponseDTCSnapshotRecordByDTCNumber(r) => {
-                write!(f, "ResponseDTCSnapshotRecordByDTCNumber({:?})", r)
+                write!(f, "ResponseDTCSnapshotRecordByDTCNumber({r:?})")
             }
             ResponseDTCStoredDataByRecordNumber(r) => {
-                write!(f, "ResponseDTCStoredDataByRecordNumber({:?})", r)
+                write!(f, "ResponseDTCStoredDataByRecordNumber({r:?})")
             }
             ResponseDTCExtDataRecordByDTCNumber(r) => {
-                write!(f, "ResponseDTCExtDataRecordByDTCNumber({:?})", r)
+                write!(f, "ResponseDTCExtDataRecordByDTCNumber({r:?})")
             }
             ResponseNumberOfDTCBySeverityMaskRecord(r) => {
-                write!(f, "ResponseNumberOfDTCBySeverityMaskRecord({:?})", r)
+                write!(f, "ResponseNumberOfDTCBySeverityMaskRecord({r:?})")
             }
             ResponseDTCBySeverityMaskRecord(r) => {
-                write!(f, "ResponseDTCBySeverityMaskRecord({:?})", r)
+                write!(f, "ResponseDTCBySeverityMaskRecord({r:?})")
             }
             ResponseSeverityInformationOfDTC(r) => {
-                write!(f, "ResponseSeverityInformationOfDTC({:?})", r)
+                write!(f, "ResponseSeverityInformationOfDTC({r:?})")
             }
             ResponseSupportedDTC(r) => {
-                write!(f, "ResponseSupportedDTC: {}", r)
+                write!(f, "ResponseSupportedDTC: {r}")
             }
             ResponseFirstTestFailedDTC(r) => {
-                write!(f, "ResponseFirstTestFailedDTC: {}", r)
+                write!(f, "ResponseFirstTestFailedDTC: {r}")
             }
             ResponseFirstConfirmedDTC(r) => {
-                write!(f, "ResponseFirstConfirmedDTC: {}", r)
+                write!(f, "ResponseFirstConfirmedDTC: {r}")
             }
             ResponseMostRecentTestFailedDTC(r) => {
-                write!(f, "ResponseMostRecentTestFailedDTC: {}", r)
+                write!(f, "ResponseMostRecentTestFailedDTC: {r}")
             }
             ResponseMostRecentConfirmedDTC(r) => {
-                write!(f, "ResponseMostRecentConfirmedDTC: {}", r)
+                write!(f, "ResponseMostRecentConfirmedDTC: {r}")
             }
             ResponseMirrorMemoryDTCByStatusMask(r) => {
-                write!(f, "ResponseMirrorMemoryDTCByStatusMask: {}", r)
+                write!(f, "ResponseMirrorMemoryDTCByStatusMask: {r}")
             }
             ResponseMirrorMemoryDTCExtDataRecordByDTCNumber(r) => {
-                write!(
-                    f,
-                    "ResponseMirrorMemoryDTCExtDataRecordByDTCNumber({:?})",
-                    r
-                )
+                write!(f, "ResponseMirrorMemoryDTCExtDataRecordByDTCNumber({r:?})")
             }
             ResponseNumberOfMirrorMemoryDTCByStatusMask(r) => {
-                write!(f, "ResponseNumberOfMirrorMemoryDTCByStatusMask({:?})", r)
+                write!(f, "ResponseNumberOfMirrorMemoryDTCByStatusMask({r:?})")
             }
             ResponseNumberOfEmissionsOBDDTCByStatusMask(r) => {
-                write!(f, "ResponseNumberOfEmissionsOBDDTCByStatusMask({:?})", r)
+                write!(f, "ResponseNumberOfEmissionsOBDDTCByStatusMask({r:?})")
             }
             ResponseEmissionsOBDDTCByStatusMask(r) => {
-                write!(f, "ResponseEmissionsOBDDTCByStatusMask: {}", r)
+                write!(f, "ResponseEmissionsOBDDTCByStatusMask: {r}")
             }
             ResponseDTCFaultDetectionCounter(r) => {
-                write!(f, "ResponseDTCFaultDetectionCounter({:?})", r)
+                write!(f, "ResponseDTCFaultDetectionCounter({r:?})")
             }
             ResponseDTCWithPermanentStatus(r) => {
-                write!(f, "ResponseDTCWithPermanentStatus: {}", r)
+                write!(f, "ResponseDTCWithPermanentStatus: {r}")
             }
             ResponseDTCExtDataRecordByRecordNumber(r) => {
-                write!(f, "ResponseDTCExtDataRecordByRecordNumber({:?})", r)
+                write!(f, "ResponseDTCExtDataRecordByRecordNumber({r:?})")
             }
             ResponseUserDefMemoryDTCByStatusMask(r) => {
-                write!(f, "ResponseUserDefMemoryDTCByStatusMask({:?})", r)
+                write!(f, "ResponseUserDefMemoryDTCByStatusMask({r:?})")
             }
             ResponseUserDefMemoryDTCSnapshotRecordByDTCNumber(r) => {
                 write!(
                     f,
-                    "ResponseUserDefMemoryDTCSnapshotRecordByDTCNumber({:?})",
-                    r
+                    "ResponseUserDefMemoryDTCSnapshotRecordByDTCNumber({r:?})"
                 )
             }
             ResponseUserDefMemoryDTCExtDataRecordByDTCNumber(r) => {
-                write!(
-                    f,
-                    "ResponseUserDefMemoryDTCExtDataRecordByDTCNumber({:?})",
-                    r
-                )
+                write!(f, "ResponseUserDefMemoryDTCExtDataRecordByDTCNumber({r:?})")
             }
             ResponseWWHOBDDTCByMaskRecord(r) => {
-                write!(f, "ResponseWWHOBDDTCByMaskRecord({:?})", r)
+                write!(f, "ResponseWWHOBDDTCByMaskRecord({r:?})")
             }
             ResponseWWHOBDDTCWithPermanentStatus(r) => {
-                write!(f, "ResponseWWHOBDDTCWithPermanentStatus({:?})", r)
+                write!(f, "ResponseWWHOBDDTCWithPermanentStatus({r:?})")
             }
             _ => todo!(),
         }
@@ -272,10 +263,10 @@ impl Display for GotListDtcAndStatusRecord {
         let mut idx = 1;
         let total = self.dtcs.len();
         for dtc_and_status in &self.dtcs {
-            if idx != total {
-                writeln!(f, "\t{:>3}. {}", idx, dtc_and_status)?;
+            if idx == total {
+                write!(f, "\t{idx:>3}. {dtc_and_status}")?;
             } else {
-                write!(f, "\t{:>3}. {}", idx, dtc_and_status)?;
+                writeln!(f, "\t{idx:>3}. {dtc_and_status}")?;
             }
             idx += 1;
         }
