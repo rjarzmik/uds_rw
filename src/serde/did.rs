@@ -1,6 +1,6 @@
 use super::Payload;
-use crate::proto::did::*;
-use crate::UdsError::{self, *};
+use crate::proto::did::{ReadDIDReq, ReadDIDRsp, WriteDIDReq, WriteDIDRsp};
+use crate::UdsError::{self, PayloadLengthTooShort};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::io::{Read, Write};
 

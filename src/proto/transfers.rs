@@ -5,9 +5,9 @@ pub struct RequestDownloadReq {
     pub compression_method: u8,
     /// Encryption method (OEM specific)
     pub encryption_method: u8,
-    /// Size in byte of the `memory_size` field (ie. u8, u16, u32 ...)
+    /// Size in byte of the `memory_size` field (i.e. u8, u16, u32 ...)
     pub memory_size_bytes: u8,
-    /// Size in byte of the `memory_address` field (ie. u8, u16, u32 ...)
+    /// Size in byte of the `memory_address` field (i.e. u8, u16, u32 ...)
     pub memory_address_bytes: u8,
     /// Memory address to store the file (OEM specific)
     pub memory_address: usize,
@@ -25,7 +25,7 @@ pub struct RequestDownloadRsp {
 }
 
 #[derive(Clone, Debug, Default)]
-/// Transfer data, ie. chunck of the Download or Upload
+/// Transfer data, i.e. chunk of the Download or Upload
 ///
 /// The length in `data` is limited by the response in [`RequestDownloadRsp`]
 pub struct TransferDataReq {

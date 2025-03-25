@@ -1,4 +1,4 @@
-use super::proto::*;
+use super::proto::Sid;
 use crate::{
     proto::{
         did::{ReadDIDReq, ReadDIDRsp, WriteDIDReq, WriteDIDRsp},

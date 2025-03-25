@@ -17,7 +17,7 @@ pub enum UdsError {
         /// Minimal or exact payload length expected
         expected: u32,
     },
-    /// Payload unkown, based on the SID
+    /// Payload unknown, based on the SID
     #[error("Unexpected payload type found: {value:?}")]
     UnexpectedPayloadType {
         /// Unknown SID

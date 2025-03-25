@@ -9,7 +9,7 @@
 //! For reference on the protocol, see ISO-13400-2.
 //!
 //! Unless used directly on top of CAN devices, these messages can we used on an
-//! Ethernet based connnection, over the DoIP protocol as in :
+//! Ethernet based connection, over the `DoIP` protocol as in :
 //! [`doip_rw_tokio`](https://crates.io/crates/doip_rw_tokio)
 //!
 //! A typical reception sequence using the library would be :
@@ -39,10 +39,10 @@ use std::{
 };
 
 #[derive(Debug, Clone)]
-/// An UDS message
+/// A UDS message
 ///
 /// The enum is all the message encoded and decoded by this module. If a message
-/// is unknown, it is by default encoded or decoded as a RawUds.
+/// is unknown, it is by default encoded or decoded as a `RawUds`.
 pub enum UdsMessage {
     /// Negative Response Code
     Nrc(message::Nrc),
@@ -57,7 +57,7 @@ pub enum UdsMessage {
     ReadDTCReq(message::ReadDTCReq),
     /// Read DTC response message
     ReadDTCRsp(message::ReadDTCRsp),
-    /// Request Download, aka. TransferStart
+    /// Request Download, aka. `TransferStart`
     RequestDownloadReq(message::RequestDownloadReq),
     /// Request Download response
     RequestDownloadRsp(message::RequestDownloadRsp),
@@ -69,15 +69,15 @@ pub enum UdsMessage {
     TransferExitReq(message::TransferExitReq),
     /// Transfer exit response
     TransferExitRsp(message::TransferExitRsp),
-    /// WriteDID request message
+    /// `WriteDID` request message
     WriteDIDReq(message::WriteDIDReq),
     /// Write DID response message
     WriteDIDRsp(message::WriteDIDRsp),
 }
 
-/// Reads an UDS message from a byte stream
+/// Reads a UDS message from a byte stream
 ///
-/// This function is normally called on the diagnostic payload in an DoIP
+/// This function is normally called on the diagnostic payload in an `DoIP`
 /// message.
 ///
 /// If a message is correctly formed in the input bytes, this function returns
@@ -106,9 +106,9 @@ pub fn uds_read<R: Read>(reader: &mut R, payload_length: usize) -> Result<UdsMes
     serde::uds_read(reader, payload_length)
 }
 
-/// Writes an UDS message to a writer
+/// Writes a UDS message to a writer
 ///
-/// This function is normally called to encode the diagnostic payload in an DoIP
+/// This function is normally called to encode the diagnostic payload in an `DoIP`
 /// message.
 ///
 /// If the message can be correctly encoded into the writer, this function
@@ -133,14 +133,14 @@ pub fn uds_write<W: Write>(writer: &mut W, msg: &UdsMessage) -> Result<(), UdsEr
     serde::uds_write(writer, msg)
 }
 
-/// Transform a UdsMessage::RawUds into a proper Uds message
+/// Transform a `UdsMessage::RawUds` into a proper Uds message
 ///
-/// If a message is provided in a RawUds, it is probable that the API user
-/// didn't want to go through the trouble to use the proper UdsMessage::XYZ.
-/// This function retransforms the RawUds into a ReadDID,..., or returns the
-/// provided RawUds if the transformation is not found.
+/// If a message is provided in a `RawUds`, it is probable that the API user
+/// didn't want to go through the trouble to use the proper `UdsMessage::XYZ`.
+/// This function retransforms the `RawUds` into a `ReadDID`,..., or returns the
+/// provided `RawUds` if the transformation is not found.
 ///
-/// Always return an UdsMessage, which might be the one provided as input
+/// Always return an `UdsMessage`, which might be the one provided as input
 ///
 /// Example:
 /// ```
@@ -152,6 +152,7 @@ pub fn uds_write<W: Write>(writer: &mut W, msg: &UdsMessage) -> Result<(), UdsEr
 ///    assert_eq!(rsp.sub, message::DTCReqSubfunction::ReportSupportedDTC);
 /// }
 /// ```
+#[must_use]
 pub fn uds_rawuds_remove_raw(msg: UdsMessage) -> UdsMessage {
     if let UdsMessage::RawUds(raw) = &msg {
         let bytes = &raw.data;

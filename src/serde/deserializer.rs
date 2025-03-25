@@ -1,4 +1,7 @@
-use serde::de::{self, DeserializeSeed, EnumAccess, SeqAccess, Visitor, *};
+use serde::de::{
+    self, DeserializeSeed, Deserializer, EnumAccess, IntoDeserializer, SeqAccess, VariantAccess,
+    Visitor,
+};
 use serde::Deserialize;
 
 #[derive(Debug)]
@@ -6,17 +9,17 @@ pub enum DecodeError {
     Custom(String),
 }
 
-/// Deserialize a type, outputing it to a vector
+/// Deserialize a type, outputting it to a vector
 ///
 /// This function deserializes a type from bytes, and returns it. The
-/// deserialization is a flat deserialization, ie. each complex type is deccoded
-/// without its length (for serqences or maps), only the contained basic uint*
+/// deserialization is a flat deserialization, i.e. each complex type is decoded
+/// without its length (for sequences or maps), only the contained basic uint*
 /// values ares decoded. The only meta information encoded is for enums where
 /// the variant index is encoded into a single byte.
 /// As a consequence, when a sequence is encountered (Vec), the deserializer
-/// consumes as many bytes as possible to fullfill the sequence.
+/// consumes as many bytes as possible to fulfill the sequence.
 ///
-/// If the serialization succees, it returns [`Ok(Vec<u8>)`].
+/// If the serialization success, it returns [`Ok(Vec<u8>)`].
 ///
 /// # Errors
 ///
@@ -40,7 +43,7 @@ where
     }
 }
 
-impl serde::de::Error for DecodeError {
+impl de::Error for DecodeError {
     fn custom<T>(msg: T) -> Self
     where
         T: core::fmt::Display,
@@ -51,11 +54,11 @@ impl serde::de::Error for DecodeError {
 
 impl core::fmt::Display for DecodeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 
-impl serde::de::StdError for DecodeError {}
+impl de::StdError for DecodeError {}
 
 type DecResult<T> = Result<T, DecodeError>;
 
@@ -66,10 +69,10 @@ struct FlatDeserializer<'de> {
     big_endian: bool,
 }
 
-impl<'de> FlatDeserializer<'de> {
+impl FlatDeserializer<'_> {
     fn assert_remaining(&self, minimum: usize) -> DecResult<()> {
         if self.input.len() < minimum {
-            Err(serde::de::Error::invalid_length(
+            Err(de::Error::invalid_length(
                 self.input.len(),
                 &"not enough bytes left",
             ))
@@ -86,7 +89,7 @@ impl<'de> FlatDeserializer<'de> {
     }
     fn take_u16(&mut self) -> DecResult<u16> {
         self.assert_remaining(2)?;
-        let slice = [self.take_u8().unwrap(), self.take_u8().unwrap()];
+        let slice = [self.take_u8()?, self.take_u8()?];
         if self.big_endian {
             Ok(u16::from_be_bytes(slice))
         } else {
@@ -97,10 +100,10 @@ impl<'de> FlatDeserializer<'de> {
     fn take_u32(&mut self) -> DecResult<u32> {
         self.assert_remaining(4)?;
         let slice: [u8; 4] = [
-            self.take_u8().unwrap(),
-            self.take_u8().unwrap(),
-            self.take_u8().unwrap(),
-            self.take_u8().unwrap(),
+            self.take_u8()?,
+            self.take_u8()?,
+            self.take_u8()?,
+            self.take_u8()?,
         ];
         if self.big_endian {
             Ok(u32::from_be_bytes(slice))
@@ -110,7 +113,7 @@ impl<'de> FlatDeserializer<'de> {
     }
 }
 
-impl<'de, 'a> de::Deserializer<'de> for &'a mut FlatDeserializer<'de> {
+impl<'de> Deserializer<'de> for &mut FlatDeserializer<'de> {
     type Error = DecodeError;
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
@@ -276,7 +279,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut FlatDeserializer<'de> {
             deserializer: &'a mut FlatDeserializer<'de>,
         }
 
-        impl<'a, 'de> SeqAccess<'de> for Access<'a, 'de> {
+        impl<'de> SeqAccess<'de> for Access<'_, 'de> {
             type Error = DecodeError;
 
             fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
@@ -299,7 +302,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut FlatDeserializer<'de> {
             len: usize,
         }
 
-        impl<'a, 'de> SeqAccess<'de> for Access<'a, 'de> {
+        impl<'de> SeqAccess<'de> for Access<'_, 'de> {
             type Error = DecodeError;
 
             fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, DecodeError>
@@ -369,7 +372,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut FlatDeserializer<'de> {
         struct Access<'a, 'de: 'a> {
             deserializer: &'a mut FlatDeserializer<'de>,
         }
-        impl<'a, 'de> VariantAccess<'de> for Access<'a, 'de> {
+        impl<'de> VariantAccess<'de> for Access<'_, 'de> {
             type Error = DecodeError;
 
             fn unit_variant(self) -> Result<(), Self::Error> {
@@ -402,7 +405,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut FlatDeserializer<'de> {
             }
         }
 
-        impl<'a, 'de> EnumAccess<'de> for Access<'a, 'de> {
+        impl<'de> EnumAccess<'de> for Access<'_, 'de> {
             type Error = DecodeError;
             type Variant = Self;
 

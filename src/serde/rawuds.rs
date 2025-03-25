@@ -18,7 +18,7 @@ impl Payload for RawUds {
         payload_length: usize,
     ) -> Result<(), UdsError> {
         self.data.resize(1 + payload_length, 0u8);
-        // The first byte is suppose to hold the SID, and should have been
+        // The first byte is supposed to hold the SID, and should have been
         // filled at initialization
         reader.read_exact(&mut self.data[1..])?;
         Ok(())

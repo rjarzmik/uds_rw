@@ -1,6 +1,6 @@
 use super::Payload;
 use crate::proto::nrc::Nrc;
-use crate::UdsError::{self, *};
+use crate::UdsError::{self, PayloadLengthTooShort};
 use byteorder::{ReadBytesExt, WriteBytesExt};
 use std::io::{Read, Write};
 

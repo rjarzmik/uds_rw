@@ -1,4 +1,4 @@
-use pretty_hex::*;
+use pretty_hex::pretty_hex;
 use std::fmt::{self, Display, Formatter};
 
 use message::NrcCode;
@@ -8,7 +8,7 @@ use crate::UdsMessage;
 
 mod dtc;
 
-pub fn fmt(uds: &UdsMessage, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+pub fn fmt(uds: &UdsMessage, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
     match uds {
         UdsMessage::Nrc(d) => d.fmt(f),
         UdsMessage::RawUds(d) => d.fmt(f),
@@ -30,7 +30,7 @@ pub fn fmt(uds: &UdsMessage, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Erro
 impl Display for message::Nrc {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match NrcCode::try_from(self.nrc) {
-            Ok(nrc) => write!(f, "Nrc 0x{:2x} ({:?})", self.nrc, nrc),
+            Ok(nrc) => write!(f, "Nrc 0x{:2x} ({nrc:?})", self.nrc),
             _ => write!(f, "Nrc 0x{:2x}", self.nrc),
         }
     }

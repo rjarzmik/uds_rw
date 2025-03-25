@@ -73,11 +73,11 @@ where
 
 impl core::fmt::Display for EncodeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 
-impl serde::ser::Error for EncodeError {
+impl ser::Error for EncodeError {
     fn custom<T>(msg: T) -> Self
     where
         T: core::fmt::Display,
@@ -97,7 +97,7 @@ struct Serializer<'s, W: Write> {
     big_endian: bool,
 }
 
-impl<'a, W: Write> ser::Serializer for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::Serializer for &mut Serializer<'_, W> {
     // The output type produced by this `Serializer` during successful
     // serialization. Most serializers that produce text or binary output should
     // set `Ok = ()` and serialize into an `io::Write` or buffer contained
@@ -122,7 +122,7 @@ impl<'a, W: Write> ser::Serializer for &'a mut Serializer<'_, W> {
     type SerializeStructVariant = Self;
 
     fn serialize_bool(self, v: bool) -> Result<Self::Ok, Self::Error> {
-        let b = if v { 0x01 } else { 0x00 };
+        let b = u8::from(v);
         serialize_slice_u8(self, &[b])
     }
 
@@ -143,44 +143,50 @@ impl<'a, W: Write> ser::Serializer for &'a mut Serializer<'_, W> {
     }
 
     fn serialize_u8(self, v: u8) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
     fn serialize_u16(self, v: u16) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
     fn serialize_u32(self, v: u32) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
     fn serialize_u64(self, v: u64) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
     fn serialize_f32(self, v: f32) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
     fn serialize_f64(self, v: f64) -> Result<Self::Ok, Self::Error> {
-        match self.big_endian {
-            true => serialize_slice_u8(self, &v.to_be_bytes()),
-            false => serialize_slice_u8(self, &v.to_le_bytes()),
+        if self.big_endian {
+            serialize_slice_u8(self, &v.to_be_bytes())
+        } else {
+            serialize_slice_u8(self, &v.to_le_bytes())
         }
     }
 
@@ -321,7 +327,7 @@ fn serialize_slice_u8<W: Write>(ser: &mut Serializer<W>, v: &[u8]) -> Result<(),
 //
 // This impl is SerializeSeq so these methods are called after `serialize_seq`
 // is called on the Serializer.
-impl<'a, W: Write> ser::SerializeSeq for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeSeq for &mut Serializer<'_, W> {
     // Must match the `Ok` type of the serializer.
     type Ok = ();
     // Must match the `Error` type of the serializer.
@@ -342,7 +348,7 @@ impl<'a, W: Write> ser::SerializeSeq for &'a mut Serializer<'_, W> {
 }
 
 // Same thing but for tuples.
-impl<'a, W: Write> ser::SerializeTuple for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeTuple for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
@@ -359,7 +365,7 @@ impl<'a, W: Write> ser::SerializeTuple for &'a mut Serializer<'_, W> {
 }
 
 // Same thing but for tuple structs.
-impl<'a, W: Write> ser::SerializeTupleStruct for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeTupleStruct for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
@@ -384,7 +390,7 @@ impl<'a, W: Write> ser::SerializeTupleStruct for &'a mut Serializer<'_, W> {
 //
 // So the `end` method in this impl is responsible for closing both the `]` and
 // the `}`.
-impl<'a, W: Write> ser::SerializeTupleVariant for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeTupleVariant for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
@@ -403,7 +409,7 @@ impl<'a, W: Write> ser::SerializeTupleVariant for &'a mut Serializer<'_, W> {
 // Some `Serialize` types are not able to hold a key and value in memory at the
 // same time so `SerializeMap` implementations are required to support
 // `serialize_key` and `serialize_value` individually.
-impl<'a, W: Write> ser::SerializeMap for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeMap for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
@@ -439,7 +445,7 @@ impl<'a, W: Write> ser::SerializeMap for &'a mut Serializer<'_, W> {
 
 // Structs are like maps in which the keys are constrained to be compile-time
 // constant strings.
-impl<'a, W: Write> ser::SerializeStruct for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeStruct for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
@@ -457,7 +463,7 @@ impl<'a, W: Write> ser::SerializeStruct for &'a mut Serializer<'_, W> {
 
 // Similar to `SerializeTupleVariant`, here the `end` method is responsible for
 // closing both of the curly braces opened by `serialize_struct_variant`.
-impl<'a, W: Write> ser::SerializeStructVariant for &'a mut Serializer<'_, W> {
+impl<W: Write> ser::SerializeStructVariant for &mut Serializer<'_, W> {
     type Ok = ();
     type Error = EncodeError;
 
