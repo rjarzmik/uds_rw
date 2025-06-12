@@ -4,7 +4,7 @@ use crate::UdsError::{self, *};
 use byteorder::{ReadBytesExt, WriteBytesExt};
 use std::io::{Read, Write};
 
-fn read_sized<R: Read>(reader: &mut R, nb_bytes: u8) -> Result<usize, UdsError> {
+fn read_sized<R: Read>(reader: &mut R, nb_bytes: u16) -> Result<usize, UdsError> {
     let mut vec = vec![0u8; nb_bytes as usize];
     reader.read_exact(&mut vec)?;
     let out: usize = match nb_bytes {
@@ -25,7 +25,7 @@ fn read_sized<R: Read>(reader: &mut R, nb_bytes: u8) -> Result<usize, UdsError> 
     Ok(out)
 }
 
-fn write_sized<W: Write>(writer: &mut W, val: usize, nb_bytes: u8) -> Result<(), UdsError> {
+fn write_sized<W: Write>(writer: &mut W, val: usize, nb_bytes: u16) -> Result<(), UdsError> {
     let vec = match nb_bytes {
         1 => (val as u8).to_be_bytes().to_vec(),
         2 => (val as u16).to_be_bytes().to_vec(),
@@ -74,8 +74,8 @@ impl Payload for RequestDownloadReq {
         self.memory_address_bytes = memory_bytes & 0x3f;
         self.memory_size_bytes = memory_bytes >> 4;
 
-        self.memory_address = read_sized(reader, self.memory_address_bytes)?;
-        self.memory_size = read_sized(reader, self.memory_size_bytes)?;
+        self.memory_address = read_sized(reader, self.memory_address_bytes.into())?;
+        self.memory_size = read_sized(reader, self.memory_size_bytes.into())?;
         Ok(())
     }
 
@@ -85,8 +85,8 @@ impl Payload for RequestDownloadReq {
         let memory_bytes: u8 = (self.memory_size_bytes << 4) | (self.memory_address_bytes & 0x3f);
         writer.write_u8(memory_bytes)?;
 
-        write_sized(writer, self.memory_address, self.memory_address_bytes)?;
-        write_sized(writer, self.memory_size, self.memory_size_bytes)?;
+        write_sized(writer, self.memory_address, self.memory_address_bytes.into())?;
+        write_sized(writer, self.memory_size, self.memory_size_bytes.into())?;
         Ok(())
     }
 }
@@ -123,7 +123,7 @@ impl Payload for RequestDownloadRsp {
             "RequestDownloadRsp: max_block_size_bytes={}",
             self.max_block_size_bytes
         );
-        self.max_block_size = read_sized(reader, self.max_block_size_bytes)?;
+        self.max_block_size = read_sized(reader, self.max_block_size_bytes.into())?;
         println!("RequestDownloadRsp: max_block_size={}", self.max_block_size);
         Ok(())
     }
@@ -131,7 +131,7 @@ impl Payload for RequestDownloadRsp {
     fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
         let max_block_size_bytes: u8 = self.max_block_size_bytes << 4;
         writer.write_u8(max_block_size_bytes)?;
-        write_sized(writer, self.max_block_size, self.max_block_size_bytes)?;
+        write_sized(writer, self.max_block_size, self.max_block_size_bytes.into())?;
         Ok(())
     }
 }
