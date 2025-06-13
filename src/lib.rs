@@ -61,6 +61,10 @@ pub enum UdsMessage {
     RequestDownloadReq(message::RequestDownloadReq),
     /// Request Download response
     RequestDownloadRsp(message::RequestDownloadRsp),
+    /// Request File Transfer
+    RequestFileTransferReq(message::RequestFileTransferReq),
+    /// Request File Transfr response
+    RequestFileTransferRsp(message::RequestFileTransferRsp),
     /// Transfer data request
     TransferDataReq(message::TransferDataReq),
     /// Transfer data response
