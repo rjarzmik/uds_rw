@@ -85,7 +85,11 @@ impl Payload for RequestDownloadReq {
         let memory_bytes: u8 = (self.memory_size_bytes << 4) | (self.memory_address_bytes & 0x3f);
         writer.write_u8(memory_bytes)?;
 
-        write_sized(writer, self.memory_address, self.memory_address_bytes.into())?;
+        write_sized(
+            writer,
+            self.memory_address,
+            self.memory_address_bytes.into(),
+        )?;
         write_sized(writer, self.memory_size, self.memory_size_bytes.into())?;
         Ok(())
     }
@@ -131,7 +135,253 @@ impl Payload for RequestDownloadRsp {
     fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
         let max_block_size_bytes: u8 = self.max_block_size_bytes << 4;
         writer.write_u8(max_block_size_bytes)?;
-        write_sized(writer, self.max_block_size, self.max_block_size_bytes.into())?;
+        write_sized(
+            writer,
+            self.max_block_size,
+            self.max_block_size_bytes.into(),
+        )?;
+        Ok(())
+    }
+}
+
+impl From<ModeOfOperation> for u8 {
+    fn from(item: ModeOfOperation) -> Self {
+        match item {
+            ModeOfOperation::Reserved => 0,
+            ModeOfOperation::AddFile => 1,
+            ModeOfOperation::DeleteFile => 2,
+            ModeOfOperation::ReplaceFile => 3,
+            ModeOfOperation::ReadFile => 4,
+            ModeOfOperation::ReadDir => 5,
+        }
+    }
+}
+
+impl From<u8> for ModeOfOperation {
+    fn from(item: u8) -> Self {
+        match item {
+            0 => Self::Reserved,
+            1 => Self::AddFile,
+            2 => Self::DeleteFile,
+            3 => Self::ReplaceFile,
+            4 => Self::ReadFile,
+            5 => Self::ReadDir,
+            _ => Self::Reserved,
+        }
+    }
+}
+
+impl RequestFileTransferReq {
+    fn file_tr_req_calculate_length(
+        mode: ModeOfOperation,
+        path_bytes: usize,
+        file_size_bytes: u8,
+    ) -> usize {
+        if (ModeOfOperation::AddFile == mode) || (ModeOfOperation::ReplaceFile == mode) {
+            1 + 2 + path_bytes + 1 + (file_size_bytes as usize) * 2
+        } else {
+            1 + 2 + path_bytes
+        }
+    }
+}
+
+impl Payload for RequestFileTransferReq {
+    fn length(&self) -> usize {
+        Self::file_tr_req_calculate_length(
+            self.mode_of_operation,
+            self.path_name.len(),
+            self.file_size_bytes,
+        )
+    }
+
+    fn read<T: Read>(reader: &mut T, payload_length: usize) -> Result<Self, UdsError> {
+        super::default_read(reader, payload_length)
+    }
+
+    fn read_replace<T: Read>(
+        &mut self,
+        reader: &mut T,
+        payload_length: usize,
+    ) -> Result<(), UdsError> {
+        *self = RequestFileTransferReq::default();
+        self.mode_of_operation = ModeOfOperation::from(reader.read_u8()?);
+        if ModeOfOperation::Reserved == self.mode_of_operation {
+            return Err(EncodingError {
+                msg: String::from("Unhandled mode of operation: Reserved"),
+            });
+        }
+        if payload_length < Self::file_tr_req_calculate_length(self.mode_of_operation, 0, 0) {
+            return Err(PayloadLengthTooShort {
+                value: payload_length as u32,
+                expected: Self::file_tr_req_calculate_length(self.mode_of_operation, 0, 0) as u32,
+            });
+        }
+
+        let file_path_and_name_bytes = read_sized(reader, 2)?;
+        let mut vec = vec![0u8; file_path_and_name_bytes];
+        reader.read_exact(&mut vec)?;
+        self.path_name = String::from_utf8(vec).map_err(|_| UdsError::EncodingError {
+            msg: "File of Path name is not a valid UTF-8 string".to_string(),
+        })?;
+
+        if (ModeOfOperation::DeleteFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadDir != self.mode_of_operation)
+        {
+            let compress_encrypt = reader.read_u8()?;
+            self.encryption_method = compress_encrypt & 0x0f;
+            self.compression_method = compress_encrypt >> 4;
+        }
+
+        if (ModeOfOperation::DeleteFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadDir != self.mode_of_operation)
+        {
+            self.file_size_bytes = reader.read_u8()?;
+            self.file_size_uncompressed = read_sized(reader, self.file_size_bytes.into())?;
+            self.file_size_compressed = read_sized(reader, self.file_size_bytes.into())?;
+        }
+
+        Ok(())
+    }
+
+    fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
+        writer.write_u8(self.mode_of_operation.into())?;
+        let path_bytes =
+            u16::try_from(self.path_name.len()).map_err(|_| UdsError::EncodingError {
+                msg: "File of Path name is bigger than 65536 bytes".to_string(),
+            })?;
+        write_sized(writer, path_bytes as usize, 2)?;
+        writer.write_all(self.path_name.as_bytes())?;
+
+        if (ModeOfOperation::DeleteFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadDir != self.mode_of_operation)
+        {
+            let compress_encrypt: u8 =
+                (self.compression_method << 4) | (self.encryption_method & 0x0f);
+            writer.write_u8(compress_encrypt)?;
+        }
+
+        if (ModeOfOperation::DeleteFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadFile != self.mode_of_operation)
+            && (ModeOfOperation::ReadDir != self.mode_of_operation)
+        {
+            writer.write_u8(self.file_size_bytes)?;
+            write_sized(
+                writer,
+                self.file_size_uncompressed,
+                self.file_size_bytes.into(),
+            )?;
+            write_sized(
+                writer,
+                self.file_size_compressed,
+                self.file_size_bytes.into(),
+            )?;
+        }
+        Ok(())
+    }
+}
+
+impl RequestFileTransferRsp {
+    fn file_tr_rsp_calculate_length(
+        mode: ModeOfOperation,
+        block_size_bytes: u8,
+        data_size_bytes: u16,
+    ) -> usize {
+        match mode {
+            ModeOfOperation::DeleteFile => 1,
+            ModeOfOperation::AddFile | ModeOfOperation::ReplaceFile => {
+                1 + 1 + block_size_bytes as usize + 1
+            }
+            ModeOfOperation::ReadDir => {
+                1 + 1 + block_size_bytes as usize + 1 + 2 + data_size_bytes as usize
+            }
+            _ => 1 + 1 + block_size_bytes as usize + 1 + 2 + (data_size_bytes as usize) * 2,
+        }
+    }
+}
+
+impl Payload for RequestFileTransferRsp {
+    fn length(&self) -> usize {
+        Self::file_tr_rsp_calculate_length(
+            self.mode_of_operation,
+            self.max_block_size_bytes,
+            self.file_dir_data_size_bytes,
+        )
+    }
+
+    fn read<T: Read>(reader: &mut T, payload_length: usize) -> Result<Self, UdsError> {
+        super::default_read(reader, payload_length)
+    }
+
+    fn read_replace<T: Read>(
+        &mut self,
+        reader: &mut T,
+        payload_length: usize,
+    ) -> Result<(), UdsError> {
+        *self = RequestFileTransferRsp::default();
+        self.mode_of_operation = ModeOfOperation::from(reader.read_u8()?);
+        if ModeOfOperation::Reserved == self.mode_of_operation {
+            return Err(EncodingError {
+                msg: String::from("Unhandled mode of operation: Reserved"),
+            });
+        }
+        if payload_length < Self::file_tr_rsp_calculate_length(self.mode_of_operation, 0, 0) {
+            return Err(PayloadLengthTooShort {
+                value: payload_length as u32,
+                expected: Self::file_tr_rsp_calculate_length(self.mode_of_operation, 0, 0) as u32,
+            });
+        }
+
+        if ModeOfOperation::DeleteFile != self.mode_of_operation {
+            self.max_block_size_bytes = reader.read_u8()?;
+            self.max_block_size = read_sized(reader, self.max_block_size_bytes.into())?;
+            let compress_encrypt = reader.read_u8()?;
+            self.encryption_method = compress_encrypt & 0x0f;
+            self.compression_method = compress_encrypt >> 4;
+        }
+        match self.mode_of_operation {
+            ModeOfOperation::ReadDir => {
+                let size_bytes = read_sized(reader, 2)? as u16;
+                self.file_dir_data_size_bytes = size_bytes;
+                self.file_dir_size_uncompressed = read_sized(reader, size_bytes)?;
+            }
+            ModeOfOperation::ReadFile => {
+                let size_bytes = read_sized(reader, 2)? as u16;
+                self.file_dir_data_size_bytes = size_bytes;
+                self.file_dir_size_uncompressed = read_sized(reader, size_bytes)?;
+                self.file_size_compressed = read_sized(reader, size_bytes)?;
+            }
+            _ => {}
+        };
+        Ok(())
+    }
+
+    fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
+        writer.write_u8(self.mode_of_operation.into())?;
+        if ModeOfOperation::DeleteFile != self.mode_of_operation {
+            writer.write_u8(self.max_block_size_bytes)?;
+            write_sized(
+                writer,
+                self.max_block_size,
+                self.max_block_size_bytes.into(),
+            )?;
+            let compress_encrypt: u8 =
+                (self.compression_method << 4) | (self.encryption_method & 0x0f);
+            writer.write_u8(compress_encrypt)?;
+        }
+        let size_bytes = self.file_dir_data_size_bytes;
+        match self.mode_of_operation {
+            ModeOfOperation::ReadDir => {
+                write_sized(writer, size_bytes.into(), 2)?;
+                write_sized(writer, self.file_dir_size_uncompressed, size_bytes)?;
+            }
+            ModeOfOperation::ReadFile => {
+                write_sized(writer, size_bytes.into(), 2)?;
+                write_sized(writer, self.file_dir_size_uncompressed, size_bytes)?;
+                write_sized(writer, self.file_size_compressed, size_bytes)?;
+            }
+            _ => {}
+        };
         Ok(())
     }
 }
