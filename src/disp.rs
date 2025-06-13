@@ -18,6 +18,8 @@ pub fn fmt(uds: &UdsMessage, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         UdsMessage::ReadDTCRsp(d) => d.fmt(f),
         UdsMessage::RequestDownloadReq(d) => d.fmt(f),
         UdsMessage::RequestDownloadRsp(d) => d.fmt(f),
+        UdsMessage::RequestFileTransferReq(d) => d.fmt(f),
+        UdsMessage::RequestFileTransferRsp(d) => d.fmt(f),
         UdsMessage::TransferDataReq(d) => d.fmt(f),
         UdsMessage::TransferDataRsp(d) => d.fmt(f),
         UdsMessage::TransferExitReq(d) => d.fmt(f),
@@ -87,6 +89,35 @@ impl Display for message::RequestDownloadRsp {
             f,
             "RequestDownloadRsp() -> max_block_size={}",
             self.max_block_size
+        )
+    }
+}
+
+impl Display for message::RequestFileTransferReq {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "RequestFileTransferReq(mode_of_operation={:?}, path_bytes=0x{:1x}, \
+            path_name=0x{:x}, compression_method=0x{:x}, encryption_method=0x{:x}, \
+            file_size_bytes=0x{:x}, file_size_uncompressed=0x{:x}, file_size_compressed=0x{:x})",
+            self.mode_of_operation, self.path_bytes, self.path_name, self.compression_method,
+            self.encryption_method, self.file_size_bytes, self.file_size_uncompressed,
+            self.file_size_compressed
+        )
+    }
+}
+
+impl Display for message::RequestFileTransferRsp {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "RequestFileTransferRsp() -> mode_of_operation={:?}, max_block_size_bytes={}, \
+            max_block_size={}, compression_method={}, encryption_method={}, \
+            read_data_size_bytes={}, file_size_uncompressed={}, dir_info_size={}, \
+            file_size_compressed={}",
+            self.mode_of_operation, self.max_block_size_bytes, self.max_block_size,
+            self.compression_method, self.encryption_method, self.read_data_size_bytes,
+            self.file_size_uncompressed, self.dir_info_size, self.file_size_compressed
         )
     }
 }

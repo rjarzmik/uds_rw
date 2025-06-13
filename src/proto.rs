@@ -28,6 +28,7 @@ pub enum Sid {
     ReadDTC,
     ReadDID,
     RequestDownload,
+    RequestFileTransfer,
     TransferData,
     TransferExit,
     WriteDID,
