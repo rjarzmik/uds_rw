@@ -67,11 +67,11 @@ impl Payload for RequestDownloadReq {
             });
         }
         let compress_encrypt = reader.read_u8()?;
-        self.encryption_method = compress_encrypt & 0x3f;
+        self.encryption_method = compress_encrypt & 0x0f;
         self.compression_method = compress_encrypt >> 4;
 
         let memory_bytes = reader.read_u8()?;
-        self.memory_address_bytes = memory_bytes & 0x3f;
+        self.memory_address_bytes = memory_bytes & 0x0f;
         self.memory_size_bytes = memory_bytes >> 4;
 
         self.memory_address = read_sized(reader, self.memory_address_bytes.into())?;
@@ -80,9 +80,9 @@ impl Payload for RequestDownloadReq {
     }
 
     fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
-        let compress_encrypt: u8 = (self.compression_method << 4) | (self.encryption_method & 0x3f);
+        let compress_encrypt: u8 = (self.compression_method << 4) | (self.encryption_method & 0x0f);
         writer.write_u8(compress_encrypt)?;
-        let memory_bytes: u8 = (self.memory_size_bytes << 4) | (self.memory_address_bytes & 0x3f);
+        let memory_bytes: u8 = (self.memory_size_bytes << 4) | (self.memory_address_bytes & 0x0f);
         writer.write_u8(memory_bytes)?;
 
         write_sized(
