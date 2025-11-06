@@ -81,7 +81,7 @@ impl Payload for WriteDIDReq {
         reader: &mut T,
         payload_length: usize,
     ) -> Result<(), UdsError> {
-        if payload_length != 2 {
+        if payload_length < 2 {
             return Err(PayloadLengthTooShort {
                 value: payload_length as u32,
                 expected: 2u32,
