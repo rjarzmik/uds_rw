@@ -38,7 +38,7 @@ use std::{
     io::{Read, Write},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// A UDS message
 ///
 /// The enum is all the message encoded and decoded by this module. If a message

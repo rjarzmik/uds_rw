@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Request to download a file
 pub struct RequestDownloadReq {
     /// Compression method (OEM specific)
@@ -15,7 +15,7 @@ pub struct RequestDownloadReq {
     pub memory_size: usize,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Response to a [`RequestDownloadReq`]
 pub struct RequestDownloadRsp {
     /// Size in byte of the `max_block_size` field (ie. u8, u16, u32 ...)
@@ -43,7 +43,7 @@ pub enum ModeOfOperation {
     ReadDir,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Request to add/delete/replace/read a file or path (server with file system)
 pub struct RequestFileTransferReq {
     /// Type of operation to be applied to `path_name`
@@ -62,7 +62,7 @@ pub struct RequestFileTransferReq {
     pub file_size_compressed: usize,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Response to a [`RequestFileTransferReq`]
 pub struct RequestFileTransferRsp {
     /// Type of operation applied to the file/dir
@@ -83,7 +83,7 @@ pub struct RequestFileTransferRsp {
     pub file_size_compressed: usize,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Transfer data, i.e. chunk of the Download or Upload
 ///
 /// The length in `data` is limited by the response in [`RequestDownloadRsp`]
@@ -94,21 +94,21 @@ pub struct TransferDataReq {
     pub data: Vec<u8>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Transfer data response
 pub struct TransferDataRsp {
     /// The sequence block number acknowledge
     pub block_sequence_counter: u8,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Transfer exit request, last download/upload request message
 pub struct TransferExitReq {
     /// Specific data
     pub user_data: Vec<u8>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Transfer exit response, last download/upload request message
 pub struct TransferExitRsp {
     /// Specific data

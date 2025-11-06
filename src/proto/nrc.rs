@@ -1,7 +1,7 @@
 extern crate enum_repr_derive;
 use enum_repr_derive::{FromEnumToRepr, TryFromReprToEnum};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Negative response code
 pub struct Nrc {
     /// Service Identifier of the request which triggered this answer

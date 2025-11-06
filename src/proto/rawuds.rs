@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Unknown or unhandled UDS message
 pub struct RawUds {
     /// Byte array of the message

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, PartialEq, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 /// Diagnostic troubleshooting code response
 pub struct ReadDTCRsp {
     /// One of all diagnostic responses
