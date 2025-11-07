@@ -478,6 +478,12 @@ pub struct ResponseUserDefMemoryDTCExtDataRecordByDTCNumber {
     pub records: Vec<ExtDataRecordAndNumber>,
 }
 
+impl From<[u8; 3]> for Dtc {
+    fn from(value: [u8; 3]) -> Self {
+        Self { dtc: value }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Dtc;
