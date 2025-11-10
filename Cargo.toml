@@ -9,4 +9,5 @@ byteorder = { version = "1" }
 enum-repr-derive = "0.2.0"
 pretty-hex = "0.4.1"
 serde = { version = "1.0", features = ["derive"] }
+serde_dis = { version = "0.1" }
 thiserror = "2.0.12"

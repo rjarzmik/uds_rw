@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_dis::{DeserializeWithDiscriminant, SerializeWithDiscriminant};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 /// Diagnostic troubleshooting code response
@@ -52,44 +53,48 @@ impl Dtc {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
+#[derive(
+    Clone, PartialEq, Debug, Default, SerializeWithDiscriminant, DeserializeWithDiscriminant,
+)]
 #[repr(u8)]
 #[allow(missing_docs)]
 pub enum DTCReqSubfunction {
     #[default]
     Reserved1 = 0x00, // 0x00
-    ReportNumberOfDTCByStatusMask(ReportNumberOfDTCByStatusMask) = 0x01, // 0x01
-    ReportDTCByStatusMask(ReportDTCByStatusMask),                        // 0x02
-    ReportDTCSnapshotIdentification(ReportDTCSnapshotIdentification),    // 0x03
-    ReportDTCSnapshotRecordByDTCNumber(ReportDTCSnapshotRecordByDTCNumber), // 0x04
-    ReportDTCStoredDataByRecordNumber(ReportDTCStoredDataByRecordNumber), // 0x05
-    ReportDTCExtDataRecordByDTCNumber(ReportDTCExtDataRecordByDTCNumber), // 0x06
-    ReportNumberOfDTCBySeverityMaskRecord(ReportNumberOfDTCBySeverityMaskRecord), // 0x07
-    ReportDTCBySeverityMaskRecord(ReportDTCBySeverityMaskRecord),        // 0x08
-    ReportSeverityInformationOfDTC(ReportSeverityInformationOfDTC),      // 0x09
-    ReportSupportedDTC,                                                  // 0x0a
-    ReportFirstTestFailedDTC,                                            // 0x0b
-    ReportFirstConfirmedDTC,                                             // 0x0c
-    ReportMostRecentTestFailedDTC,                                       // 0x0d
-    ReportMostRecentConfirmedDTC,                                        // 0x0e
-    ReportMirrorMemoryDTCByStatusMask(ReportMirrorMemoryDTCByStatusMask), // 0x0f
-    ReportMirrorMemoryDTCExtDataRecordByDTCNumber(ReportMirrorMemoryDTCExtDataRecordByDTCNumber), // 0x10
-    ReportNumberOfMirrorMemoryDTCByStatusMask(ReportNumberOfMirrorMemoryDTCByStatusMask), // 0x11
-    ReportNumberOfEmissionsOBDDTCByStatusMask(ReportNumberOfEmissionsOBDDTCByStatusMask), // 0x12
-    ReportEmissionsOBDDTCByStatusMask(ReportEmissionsOBDDTCByStatusMask),                 // 0x13
-    ReportDTCFaultDetectionCounter,                                                       // 0x14
-    ReportDTCWithPermanentStatus,                                                         // 0x15
-    ReportDTCExtDataRecordByRecordNumber(ReportDTCExtDataRecordByRecordNumber),           // 0x16
-    ReportUserDefMemoryDTCByStatusMask(ReportUserDefMemoryDTCByStatusMask),               // 0x17
+    ReportNumberOfDTCByStatusMask(ReportNumberOfDTCByStatusMask) = 0x01,
+    ReportDTCByStatusMask(ReportDTCByStatusMask) = 0x02,
+    ReportDTCSnapshotIdentification(ReportDTCSnapshotIdentification) = 0x03,
+    ReportDTCSnapshotRecordByDTCNumber(ReportDTCSnapshotRecordByDTCNumber) = 0x04,
+    ReportDTCStoredDataByRecordNumber(ReportDTCStoredDataByRecordNumber) = 0x05,
+    ReportDTCExtDataRecordByDTCNumber(ReportDTCExtDataRecordByDTCNumber) = 0x06,
+    ReportNumberOfDTCBySeverityMaskRecord(ReportNumberOfDTCBySeverityMaskRecord) = 0x07,
+    ReportDTCBySeverityMaskRecord(ReportDTCBySeverityMaskRecord) = 0x08,
+    ReportSeverityInformationOfDTC(ReportSeverityInformationOfDTC) = 0x09,
+    ReportSupportedDTC = 0x0a,
+    ReportFirstTestFailedDTC = 0x0b,
+    ReportFirstConfirmedDTC = 0x0c,
+    ReportMostRecentTestFailedDTC = 0x0d,
+    ReportMostRecentConfirmedDTC = 0x0e,
+    ReportMirrorMemoryDTCByStatusMask(ReportMirrorMemoryDTCByStatusMask) = 0x0f,
+    ReportMirrorMemoryDTCExtDataRecordByDTCNumber(ReportMirrorMemoryDTCExtDataRecordByDTCNumber) =
+        0x10,
+    ReportNumberOfMirrorMemoryDTCByStatusMask(ReportNumberOfMirrorMemoryDTCByStatusMask) = 0x11,
+    ReportNumberOfEmissionsOBDDTCByStatusMask(ReportNumberOfEmissionsOBDDTCByStatusMask) = 0x12,
+    ReportEmissionsOBDDTCByStatusMask(ReportEmissionsOBDDTCByStatusMask) = 0x13,
+    ReportDTCFaultDetectionCounter = 0x14,
+    ReportDTCWithPermanentStatus = 0x15,
+    ReportDTCExtDataRecordByRecordNumber(ReportDTCExtDataRecordByRecordNumber) = 0x16,
+    ReportUserDefMemoryDTCByStatusMask(ReportUserDefMemoryDTCByStatusMask) = 0x17,
     ReportUserDefMemoryDTCSnapshotRecordByDTCNumber(
         ReportUserDefMemoryDTCSnapshotRecordByDTCNumber,
-    ), // 0x18
-    ReportUserDefMemoryDTCExtDataRecordByDTCNumber(ReportUserDefMemoryDTCExtDataRecordByDTCNumber), // 0x19
-    Reserved2,                                                              // 0x1a-0x41
-    ReportWWHOBDDTCByMaskRecord(ReportWWHOBDDTCByMaskRecord),               // 0x42
-    Reserved3,                                                              // 0x43-0x54,
-    ReportWWHOBDDTCWithPermanentStatus(ReportWWHOBDDTCWithPermanentStatus), // 0x55
-    Reserved4,                                                              // 0x56-0x7f
+    ) = 0x18,
+    ReportUserDefMemoryDTCExtDataRecordByDTCNumber(ReportUserDefMemoryDTCExtDataRecordByDTCNumber) =
+        0x19,
+    Reserved2 = 0x1a, // 0x1a..0x41
+    ReportWWHOBDDTCByMaskRecord(ReportWWHOBDDTCByMaskRecord) = 0x42,
+    Reserved3 = 0x43, // 0x43..0x54,
+    ReportWWHOBDDTCWithPermanentStatus(ReportWWHOBDDTCWithPermanentStatus) = 0x55,
+    Reserved4 = 0x56, // 0x56..0x7f
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -202,47 +207,49 @@ pub type ReportWWHOBDDTCByMaskRecord = ByFunctionalGroupIdentifier;
 pub type ReportWWHOBDDTCWithPermanentStatus = ByFunctionalGroupIdentifier;
 
 /*********** Responses **********/
-#[derive(Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
+#[derive(
+    Clone, PartialEq, Debug, Default, SerializeWithDiscriminant, DeserializeWithDiscriminant,
+)]
 #[repr(u8)]
 #[allow(missing_docs)]
 /// One DTC response
 pub enum DTCRspSubfunction {
     #[default]
-    Reserved1 = 0x00, // 0x00
-    ResponseNumberOfDTCByStatusMask(ResponseNumberOfDTCByStatusMask) = 0x01, // 0x01
-    ResponseDTCByStatusMask(ResponseDTCByStatusMask),                        // 0x02
-    ResponseDTCSnapshotIdentification(ResponseDTCSnapshotIdentification),    // 0x03
-    ResponseDTCSnapshotRecordByDTCNumber(ResponseDTCSnapshotRecordByDTCNumber), // 0x04
-    ResponseDTCStoredDataByRecordNumber(ResponseDTCStoredDataByRecordNumber), // 0x05
-    ResponseDTCExtDataRecordByDTCNumber(ResponseDTCExtDataRecordByDTCNumber), // 0x06
-    ResponseNumberOfDTCBySeverityMaskRecord(ResponseNumberOfDTCBySeverityMaskRecord), // 0x07
-    ResponseDTCBySeverityMaskRecord(ResponseDTCBySeverityMaskRecord),        // 0x08
-    ResponseSeverityInformationOfDTC(ResponseDTCBySeverityMaskRecord),       // 0x09
-    ResponseSupportedDTC(ResponseSupportedDTC),                              // 0x0a
-    ResponseFirstTestFailedDTC(ResponseFirstTestFailedDTC),                  // 0x0b
-    ResponseFirstConfirmedDTC(ResponseFirstConfirmedDTC),                    // 0x0c
-    ResponseMostRecentTestFailedDTC(ResponseMostRecentTestFailedDTC),        // 0x0d
-    ResponseMostRecentConfirmedDTC(ResponseMostRecentConfirmedDTC),          // 0x0e
-    ResponseMirrorMemoryDTCByStatusMask(ResponseMirrorMemoryDTCByStatusMask), // 0x0f
-    ResponseMirrorMemoryDTCExtDataRecordByDTCNumber(ResponseDTCExtDataRecordByDTCNumber), // 0x10
-    ResponseNumberOfMirrorMemoryDTCByStatusMask(ResponseNumberOfMirrorMemoryDTCByStatusMask), // 0x11
-    ResponseNumberOfEmissionsOBDDTCByStatusMask(ResponseNumberOfEmissionsOBDDTCByStatusMask), // 0x12
-    ResponseEmissionsOBDDTCByStatusMask(ResponseEmissionsOBDDTCByStatusMask), // 0x13
-    ResponseDTCFaultDetectionCounter(ResponseDTCFaultDetectionCounter),       // 0x14
-    ResponseDTCWithPermanentStatus(ResponseDTCWithPermanentStatus),           // 0x15
-    ResponseDTCExtDataRecordByRecordNumber(ResponseDTCExtDataRecordByRecordNumber), // 0x16
-    ResponseUserDefMemoryDTCByStatusMask(ResponseUserDefMemoryDTCByStatusMask), // 0x17
+    Reserved1 = 0x00,
+    ResponseNumberOfDTCByStatusMask(ResponseNumberOfDTCByStatusMask) = 0x01,
+    ResponseDTCByStatusMask(ResponseDTCByStatusMask) = 0x02,
+    ResponseDTCSnapshotIdentification(ResponseDTCSnapshotIdentification) = 0x03,
+    ResponseDTCSnapshotRecordByDTCNumber(ResponseDTCSnapshotRecordByDTCNumber) = 0x04,
+    ResponseDTCStoredDataByRecordNumber(ResponseDTCStoredDataByRecordNumber) = 0x05,
+    ResponseDTCExtDataRecordByDTCNumber(ResponseDTCExtDataRecordByDTCNumber) = 0x06,
+    ResponseNumberOfDTCBySeverityMaskRecord(ResponseNumberOfDTCBySeverityMaskRecord) = 0x07,
+    ResponseDTCBySeverityMaskRecord(ResponseDTCBySeverityMaskRecord) = 0x08,
+    ResponseSeverityInformationOfDTC(ResponseDTCBySeverityMaskRecord) = 0x09,
+    ResponseSupportedDTC(ResponseSupportedDTC) = 0x0a,
+    ResponseFirstTestFailedDTC(ResponseFirstTestFailedDTC) = 0x0b,
+    ResponseFirstConfirmedDTC(ResponseFirstConfirmedDTC) = 0x0c,
+    ResponseMostRecentTestFailedDTC(ResponseMostRecentTestFailedDTC) = 0x0d,
+    ResponseMostRecentConfirmedDTC(ResponseMostRecentConfirmedDTC) = 0x0e,
+    ResponseMirrorMemoryDTCByStatusMask(ResponseMirrorMemoryDTCByStatusMask) = 0x0f,
+    ResponseMirrorMemoryDTCExtDataRecordByDTCNumber(ResponseDTCExtDataRecordByDTCNumber) = 0x10,
+    ResponseNumberOfMirrorMemoryDTCByStatusMask(ResponseNumberOfMirrorMemoryDTCByStatusMask) = 0x11,
+    ResponseNumberOfEmissionsOBDDTCByStatusMask(ResponseNumberOfEmissionsOBDDTCByStatusMask) = 0x12,
+    ResponseEmissionsOBDDTCByStatusMask(ResponseEmissionsOBDDTCByStatusMask) = 0x13,
+    ResponseDTCFaultDetectionCounter(ResponseDTCFaultDetectionCounter) = 0x14,
+    ResponseDTCWithPermanentStatus(ResponseDTCWithPermanentStatus) = 0x15,
+    ResponseDTCExtDataRecordByRecordNumber(ResponseDTCExtDataRecordByRecordNumber) = 0x16,
+    ResponseUserDefMemoryDTCByStatusMask(ResponseUserDefMemoryDTCByStatusMask) = 0x17,
     ResponseUserDefMemoryDTCSnapshotRecordByDTCNumber(
         ResponseUserDefMemoryDTCSnapshotRecordByDTCNumber,
-    ), // 0x18
+    ) = 0x18,
     ResponseUserDefMemoryDTCExtDataRecordByDTCNumber(
         ResponseUserDefMemoryDTCExtDataRecordByDTCNumber,
-    ), // 0x19
-    Reserved2,                                                                // 0x1a-0x41
-    ResponseWWHOBDDTCByMaskRecord(Vec<u8>),                                   // 0x42
-    Reserved3,                                                                // 0x43-0x54,
-    ResponseWWHOBDDTCWithPermanentStatus(Vec<u8>),                            // 0x55
-    Reserved4,                                                                // 0x56-0x7f
+    ) = 0x19,
+    Reserved2 = 0x1a, // 0x1a..0x41,
+    ResponseWWHOBDDTCByMaskRecord(Vec<u8>) = 0x42,
+    Reserved3 = 0x43, // 0x43..-0x54,
+    ResponseWWHOBDDTCWithPermanentStatus(Vec<u8>) = 0x55,
+    Reserved4 = 0x56, // 0x56..0x7f
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -252,7 +259,7 @@ pub struct GotDTCCount {
     pub mask: DTCStatusMask,
     /// DTC format
     pub format: u8,
-    ///  Nuber of DTC found
+    ///  Number of DTC found
     pub count: u16,
 }
 #[allow(missing_docs)]
@@ -481,6 +488,15 @@ pub struct ResponseUserDefMemoryDTCExtDataRecordByDTCNumber {
 impl From<[u8; 3]> for Dtc {
     fn from(value: [u8; 3]) -> Self {
         Self { dtc: value }
+    }
+}
+
+impl From<u32> for Dtc {
+    fn from(value: u32) -> Self {
+        let bytes = value.to_be_bytes();
+        Self {
+            dtc: [bytes[1], bytes[2], bytes[3]],
+        }
     }
 }
 
