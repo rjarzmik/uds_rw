@@ -433,18 +433,21 @@ impl Payload for TransferDataRsp {
         reader: &mut T,
         payload_length: usize,
     ) -> Result<(), UdsError> {
-        if payload_length != 1 {
+        if payload_length < 1 {
             return Err(PayloadLengthTooShort {
                 value: payload_length as u32,
                 expected: 1u32,
             });
         }
         self.block_sequence_counter = reader.read_u8()?;
+        self.data.resize(payload_length - 1, 0);
+        reader.read_exact(&mut self.data)?;
         Ok(())
     }
 
     fn write<T: Write>(&self, writer: &mut T) -> Result<(), UdsError> {
         writer.write_u8(self.block_sequence_counter)?;
+        writer.write_all(&self.data)?;
         Ok(())
     }
 }

@@ -109,8 +109,9 @@ fn transfer_data_rsp_ok() {
     use uds_rw::message::TransferDataRsp;
     let req = UdsMessage::TransferDataRsp(TransferDataRsp {
         block_sequence_counter: 4,
+        data: vec![0x25, 0x01],
     });
-    let exp = vec![0x76, 0x04];
+    let exp = vec![0x76, 0x04, 0x25, 0x01];
     test_encode_decode(&req, &exp);
 }
 

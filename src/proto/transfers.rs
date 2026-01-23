@@ -99,6 +99,8 @@ pub struct TransferDataReq {
 pub struct TransferDataRsp {
     /// The sequence block number acknowledge
     pub block_sequence_counter: u8,
+    /// The block content
+    pub data: Vec<u8>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
