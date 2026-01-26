@@ -16,9 +16,17 @@ fn read_sized<R: Read>(reader: &mut R, nb_bytes: u16) -> Result<usize, UdsError>
             let a: [u8; 2] = vec.try_into().unwrap();
             Ok(u16::from_be_bytes(a) as usize)
         }
+        3 => {
+            let a: [u8; 4] = [0, vec[0], vec[1], vec[2]];
+            Ok(u32::from_be_bytes(a) as usize)
+        }
         4 => {
             let a: [u8; 4] = vec.try_into().unwrap();
             Ok(u32::from_be_bytes(a) as usize)
+        }
+        5 => {
+            let a: [u8; 8] = [0, 0, 0, vec[0], vec[1], vec[2], vec[3], vec[4]];
+            Ok(u64::from_be_bytes(a) as usize)
         }
         _ => Err(UdsError::UnexpectedPayloadType { value: 0 }),
     }?;
@@ -29,10 +37,12 @@ fn write_sized<W: Write>(writer: &mut W, val: usize, nb_bytes: u16) -> Result<()
     let vec = match nb_bytes {
         1 => (val as u8).to_be_bytes().to_vec(),
         2 => (val as u16).to_be_bytes().to_vec(),
+        3 => (val as u32).to_be_bytes()[1..4].to_vec(),
         4 => (val as u32).to_be_bytes().to_vec(),
+        5 => (val as u64).to_be_bytes()[3..8].to_vec(),
         _ => {
             return Err(UdsError::EncodingError {
-                msg: "bytes should be 1,2 or 4".to_string(),
+                msg: "bytes should be 1,2.3.4 or 5".to_string(),
             })
         }
     };
